@@ -6,13 +6,36 @@ import { Modal } from 'react-bootstrap';
 import { useController, useForm, control  } from "react-hook-form";
 import { requestGet } from '../redux/action/dataRequest';
 import { useDispatch, useSelector } from 'react-redux';
-
+import requestService from './service/requestService';
+import { useHistory } from "react-router-dom";
+import roomService from './service/roomService';
+import loginServer from '../Common/service/loginServer';
 function ProblemPanel(){
 
+// need to get by professional
+// yeah i should
+// 75% function :V without test
 
+  let history = useHistory();
   const [modal, modalState]= useState(false)
-  const requestsData = useSelector(state => state.data)
+  const requestsData = useSelector(state => state)
+
+  const [info, setInfo] = useState(0)
+
   const dispatch = useDispatch();
+
+  const loadUserData = async ()=>{
+
+    loginServer.getRole({token: localStorage.getItem('info')}).then((role)=>{
+      if(role.data !== 'err')
+      {
+        setInfo(role.data);
+      }
+    }).catch((err)=>{console.log(err)});
+  }
+
+
+
   const createTable=()=>{
       $('table.display').DataTable(
           {
@@ -25,7 +48,12 @@ function ProblemPanel(){
           });
   }
 
+  useEffect(()=>{
+    console.log({info})
+  },[info])
+
     useEffect(()=>{
+        loadUserData()
         dispatch(requestGet());
         createTable()
     },[])
@@ -41,6 +69,57 @@ function ProblemPanel(){
     const data ={
       name: "L"
     }
+
+    const renderSwitch = (param) => {
+      switch (param){
+        case "0" : return <span class="badge bg-danger">Pending ...</span>
+        case "1" : return <span class="badge bg-primary">Busy ...</span>
+        default : return  <span class="badge bg-dark">Closed</span>
+      }
+    }
+
+    
+    
+
+
+    const handleRequest = async(request, sts, room) =>{
+
+      if(sts === "0")
+      {
+        if(info._id === request.isTaken)
+        {          
+          console.log("Can change")
+          requestService.update(request._id,{status: sts}).then(async()=>{
+            dispatch(requestGet())
+          })
+        }
+        else
+        {
+          alert("U cant")
+        }
+
+      }
+      else{
+        requestService.update(request,{status: sts}).then(async()=>{
+
+          dispatch(requestGet())
+          if(room)
+          {
+            roomService.attend({token: localStorage.getItem("info"), room: room}).then(async(res)=>{
+              history.push(`/message/${room}`)
+            })
+            
+          }
+  
+        })
+
+      }
+
+
+
+
+    }
+    
 
 
 
@@ -59,7 +138,7 @@ function ProblemPanel(){
           <div className="col-md-12">
             <div className="card shadow">
               <div className="card-body">
-                {requestsData.loading === true ? <div>Loading ...</div>:
+                {requestsData && requestsData.loading === true ? <div>Loading ...</div>:
                               <table className="table datatables display ">
                               <thead>
                               <tr>
@@ -68,6 +147,7 @@ function ProblemPanel(){
                                   <th>Status</th>
                                   <th>User</th>
                                   <th>Action</th>
+                                  <th></th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -77,23 +157,21 @@ function ProblemPanel(){
                                     <tr key={idx}>
                                     <td>{request._id}</td>
                                     <td>{request.problem}</td>
-                                    <td>{async ()=>{
-                                      switch (request.status){
-                                        case "0" : return <span class="badge bg-danger">Pending ...</span>
-                                        case "1" : return <span class="badge bg-primary">Handling ...</span>
-                                        default : return  <span class="badge bg-dark">Closed</span>
+                                    <td>{ renderSwitch(request.status)
+                                    }</td>
+                                    <td>{request.byUser && request.byUser.name}</td>
+                                    <td>
+                                      {
+                                        request.status == 0 ?  <button type="button" class="btn btn-primary" disabled={request.status != 0 ? true : false} onClick={()=>handleRequest(request._id,"1",request.room)}>Handle request</button> :
+                                        <button type="button" class="btn btn-danger" disabled = {info._id === request.status} onClick={()=>handleRequest(request,"0")}>Pending request</button>
                                       }
-                                    }}</td>
-                                    <td>{request.byUser.name}</td>
-                                      <td><button className="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                          <span className="text-muted sr-only">Action</span>
-                                        </button>
-                                        {/* <div className="dropdown-menu dropdown-menu-right">
-                                          <a className="dropdown-item text-warning pointercursor" onClick={()=>this.setModalState(0, true,user)}>Edit</a>
-                                          <a className="dropdown-item text-danger pointercursor" onClick={()=>this.removeConfirm(user)}>{user.status === true ? "Disabled" : "Enable"  }</a>
-                                          <a className="dropdown-item text-primary pointercursor" onClick={()=>this.setModalState(1,false, user)}>Activities</a>
-                                        </div> */}
-                                      </td>
+                                   
+                                    </td>
+                                    <td>
+                                      {
+                                        request.status == 2 ? null :  <button type="button" class="btn btn-success">Mark success</button>
+                                      }
+                                    </td>
                                     </tr>
                                     )
                                   })
@@ -101,7 +179,6 @@ function ProblemPanel(){
               
                               </tbody>
                             </table> }
-                
               </div>
             </div>
           </div> 

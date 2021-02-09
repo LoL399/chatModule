@@ -18,8 +18,10 @@ import { useEffect, useState } from "react"
                 <br/>
                 <img src={"https://images.pexels.com/photos/853199/pexels-photo-853199.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"} class="imgbox " alt="..."/>
                 </div> */}
-            <p>{chat.content}</p>
-            </div>    
+            <span className="textDisplay">{chat.content}</span>
+            
+            </div>
+
         </div>
     )
 

@@ -10,7 +10,8 @@ import io from 'socket.io-client';
 import chatService from "../Admin/service/chatService";
 import loginServer from "./service/loginServer";
 import userService from "../Admin/service/userService";
-
+import { Button, Modal } from "react-bootstrap";
+import ProblemForm from "../Admin/problemForm"
 
 // const socket = io('localhost:8080');
 
@@ -21,6 +22,8 @@ function UserChat(props){
 
     const history = useHistory()
     const [role, setRole] = useState("user")
+
+    const [modal, setModal] = useState(false)
 
     const focusLast = async () => {
 
@@ -37,18 +40,33 @@ function UserChat(props){
 
     const dispatch = useDispatch();
 
+
+    const initData = (code) =>{
+        loginServer.getRole({token: localStorage.getItem('info')}).then((role)=>{
+            if(role.data !== 'err')
+            {
+              setRole(role.data);
+              if(code) //init code
+              {
+                openTheGate()
+              }
+
+            }
+          }).catch((err)=>{console.log(err)});
+    }
+
     useEffect(() => {
 
-        loginServer.getRole({token: localStorage.getItem('info')}).then((role)=>{
-          if(role.data !== 'err')
-          {
-            setRole(role.data);
-            openTheGate()
-          }
-        }).catch((err)=>{console.log(err)});
+        initData(0)
   
       }, []);
 
+
+      useEffect(() => {
+        initData()
+
+  
+      }, [id]);
 
     useEffect(()=>{
         if(id){
@@ -141,16 +159,11 @@ function UserChat(props){
 
                 </div>
                 <div className="col-6">
-                    <div class="dropdown float-right">
-                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown link
-                        </a>
-
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
+                    <div className="dropdown float-right p-2">
+                        {/* create new user problem request  */}
+                        <button type="button" className="btn btn-primary" onClick={()=>{setModal(true)}}>Create Problem </button>
+                        {/* GTFO */}
+                        <button type="button" class="btn btn-danger ml-2">GTFOUT</button>
                     </div>
 
                 </div>
@@ -161,7 +174,7 @@ function UserChat(props){
             {
                 chatList.items.map((chat,idx)=>{
 
-                    if(role._id && chat.fromUser !== role._id){
+                    if(role._id && chat.fromUser?._id !== role._id){
                         return <YourChat data={chat}/>
                     }
                     else{
@@ -185,6 +198,22 @@ function UserChat(props){
                 <input type="text" class="form-control" placeholder="Say something ..." value={content} onClick={()=>seenMess()} onChange={(e)=>setContent(e.target.value)}/>
                 <button class="btn btn-outline-secondary" type="button" onClick={makeMessage}>Send</button>
             </div>
+
+
+
+
+
+
+
+
+            <Modal show={modal} size="lg" onHide={()=>setModal(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>Modal heading</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ProblemForm info = {info} room={id}/>
+                </Modal.Body>
+            </Modal>
         
         </div>
 

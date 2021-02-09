@@ -12,9 +12,10 @@ function YourChat(data){
             </span>
             </div> */}
 
-        <div className="col-4 ">
+        <div className="col-10">
             <div className="chatbox">
-                <p>{chat.content}</p>
+                <span className="textDisplay">{chat.content}</span>
+                {chat.fromUser?.name === null ? null : <small className="font-italic">by: {chat.fromUser?.name}</small>    }
             </div>
             {/* <div className="chatbox repliesbox ">
             <small>Reply...</small>

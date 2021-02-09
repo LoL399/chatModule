@@ -16,16 +16,17 @@ router.get("/role/get", role.getAll);
 router.post("/role/create", role.create);
 
 //request
-router.get("/request/get", request.getAll);
+router.post("/request/get", request.getAll);
 router.get("/request/get/:id", request.getOne);
 router.post("/request/create", request.create);
-router.put("/reques/update/:id", request.updateRequest);
+router.put("/request/update/:id", request.updateRequest);
 
 //room
 router.post("/room/create", room.create)
 router.post("/room/hidden", room.changeRoomStatus)
 router.post("/room", room.getRoomList)
 router.get("/room/get", room.getAll)
+router.put("/room/attend", room.attendRoom)
 
 //chat (Fuck this)
 router.post("/chat/get", chat.getAll);

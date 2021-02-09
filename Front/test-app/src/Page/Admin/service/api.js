@@ -7,6 +7,7 @@ const url ={    /// tat ca cac duong dan thi nam o day
     usser: "user",
     room: "room",
     chat: "chat",
+    role: "role"
 
 };
 const instance = axios.create({             

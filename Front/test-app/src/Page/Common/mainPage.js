@@ -17,7 +17,7 @@ import sideBar from "./sideBar";
 import { useEffect, useState } from "react";
 import SideBar from "./sideBar";
 import ProblemPanel from "../Admin/problem";
-import ProblemForm from "../User/problemForm";
+// import ProblemForm from "../User/problemForm";
 import UserChat from "./userChatRoom";
 import DummyPage from "../User/dummyPage";
 
@@ -61,7 +61,7 @@ function MainPage(props){
                 <Route path='/message/:id' exact render={props => (<UserChat socket={socket} />)} />
                 {/* <Route path='/message' exact render={props => (<UserChat socket={socket} />)}  /> */}
                 <Route path='/request' exact component={ProblemPanel} />
-                <Route path='/report' exact component={ProblemForm} />
+                {/* <Route path='/report' exact component={ProblemForm} /> */}
                 <Route path='/admin' exact component={AdminPage} />
 
                 <Redirect to='/welcome'/>

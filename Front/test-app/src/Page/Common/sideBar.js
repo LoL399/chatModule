@@ -174,7 +174,7 @@ function SideBar(props){
         <nav className="vertnav navbar navbar-light">
         <ul className="navbar-nav flex-fill w-100 mb-2">
 
-          {role === "Master" ?         
+          {role.role && role.role.name === "Master" ?         
           <li className="nav-item ">
             <Link  className=" nav-link" to={"/admin"}>
               <i className="fe fe-home fe-16"></i>
@@ -185,12 +185,13 @@ function SideBar(props){
           }
           {
             role !== "user" ?
-            
             <li className="nav-item  ">
-            <a  className=" nav-link">
+              <Link  className=" nav-link" to={"/request"}>
+
               <i className="fe fe-home fe-16"></i>
               <span className="ml-3 item-text">REQUESTS</span><span className="sr-only">(current)</span>
-            </a>
+
+            </Link>
 
           </li> : null
           }

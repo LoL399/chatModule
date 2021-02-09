@@ -174,7 +174,7 @@ function DummyPage(data){
                     {
                     chatList.items.map((chat,idx)=>{
 
-                        if(info._id && chat.fromUser !== info._id){
+                        if(info._id && chat.fromUser._id !== info._id){
                             return <YourChat data={chat}/>
                         }
                         else{

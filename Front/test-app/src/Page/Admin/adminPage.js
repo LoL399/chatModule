@@ -87,7 +87,7 @@ function AdminPage(){
                       <td>{user._id}</td>
                       <td>{user.name}</td>
                       <td>{user.email}</td>
-                      <td>{user.role.name}</td>
+                      <td>{user.role && user.role.name}</td>
                       <td><span class="badge badge-pill badge-success text-light">Active</span></td>
 
                         <td><button className="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

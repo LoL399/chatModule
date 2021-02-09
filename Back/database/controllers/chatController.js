@@ -93,7 +93,7 @@ const getbyRoom = async (req, res) =>{
     try {
         const {id}= req.params
         const {skip}=req.body
-        Chat.find({UserRoom: id}).sort( {createdAt: -1}).populate({path: "UserRoom"}).limit(skip).then( async (chat)=>{
+        Chat.find({UserRoom: id}).sort( {createdAt: -1}).populate({path: "UserRoom"}).populate("fromUser", "name").limit(skip).then( async (chat)=>{
 
             if(chat.length === 0)
             {

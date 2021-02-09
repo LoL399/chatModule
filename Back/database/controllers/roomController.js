@@ -35,6 +35,36 @@ const create = async (req, res) => {
 
 };
 
+const attendRoom= async (req, res) =>{
+
+    const { token,room } = req.body;
+    const id = await decodeToken(token)
+
+    Room.findById(room).then( async (room)=>{
+
+        if(room.attendants.includes(id) || room.attendants.length >= 3)
+        {
+            console.log("Already or more than 4") 
+            let data =  await responeData.createData(1,"",-1)
+            res.status(200).json(data)
+
+        }
+        else
+        {
+            room.attendants.push(id)
+            room.save().then(async()=>{
+                console.log("In") 
+                let data = await responeData.createData(0,"",1)
+                res.status(200).json(data)
+            })
+
+        }
+    })
+
+    
+
+}
+
 
 const createbyUser = async (req, res) => {
     try {
@@ -182,4 +212,4 @@ const getRoomList = async (req, res) =>{
     }
 }
 
-module.exports = {create, createbyUser,getAll, changeRoomStatus,getRoomList,getRoomByUser,newChat}
+module.exports = {create, createbyUser,getAll, changeRoomStatus,getRoomList,getRoomByUser,newChat, attendRoom}

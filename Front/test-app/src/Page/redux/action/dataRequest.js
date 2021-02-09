@@ -9,7 +9,7 @@ export function requestGet(){
 
     return function(dispatch)
     {
-        return requestService.list().then(data =>{
+        return requestService.list({token: localStorage.getItem("info")}).then(data =>{
             dispatch({
                 type: FETCH_USERS_SUCCESS,
                 payload: data.data.data
