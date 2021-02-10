@@ -19,7 +19,7 @@ function ProblemDetail(props) {
   const [listRole, setListRoles] = useState(0)
   const [role, setRole] = useState(false)
 
-  const {info, room} = props
+  const {info, room, socket} = props
 
 
   const loadData = async ()=>{
@@ -56,10 +56,11 @@ function ProblemDetail(props) {
         handleBy: role
   
       }
-      console.log(value)
-      requestService.add(value).then((res)=>{
-        console.log(res)
-      })
+      socket.emit('newReq', value)
+
+      // requestService.add(value).then((res)=>{
+      //   console.log(res)
+      // })
     }
 
 

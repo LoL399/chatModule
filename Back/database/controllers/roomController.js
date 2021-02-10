@@ -35,6 +35,21 @@ const create = async (req, res) => {
 
 };
 
+
+const getRoomAttendants= async (req, res) =>{
+
+    const { id } = req.body;
+
+    Room.findById(id).populate("attendants","name").then( async (room)=>{
+
+        let data =  await responeData.createData(0,room.attendants,"Success")
+        res.status(200).json(data)
+    })
+
+    
+
+}
+
 const attendRoom= async (req, res) =>{
 
     const { token,room } = req.body;
@@ -212,4 +227,37 @@ const getRoomList = async (req, res) =>{
     }
 }
 
-module.exports = {create, createbyUser,getAll, changeRoomStatus,getRoomList,getRoomByUser,newChat, attendRoom}
+const GTFO = async (req,res) => {
+    try {
+        const {token,roomId} = req.body
+        const id = await decodeToken(token)
+
+        if(id)
+        {
+          Room.findById(roomId).then( async (room)=>{
+    
+            if(room.attendants.includes(id))
+            {
+                room.attendants.pop(id)
+                // room.attendants = a
+                room.save().then(async ()=>{
+                    let data =  await responeData.createData(0,null, 1)
+                    return res.status(200).json(data)
+                })
+            }
+          })
+          .catch(async (err)=>{
+              console.log(err)
+            //   let data =  await responeData.createData(1,null,err)
+            //   return res.status(200).json(data)
+          })
+        }
+
+        
+    } catch (error) {
+        console.log(error)
+        
+    }
+}
+
+module.exports = {create, createbyUser,getAll, changeRoomStatus,getRoomList,getRoomByUser,newChat, attendRoom, getRoomAttendants, GTFO}

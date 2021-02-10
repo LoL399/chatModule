@@ -1,29 +1,35 @@
 import React, { createRef, useEffect, useRef, useState } from 'react';
 import $ from 'jquery';
 import Dialog from 'react-bootstrap-dialog';
-import DataTable from 'datatables.net';
+import reqHandle from "../redux/reducer/requestHandler";
+import { applyMiddleware, createStore } from "redux";
 import { Modal } from 'react-bootstrap';
 import { useController, useForm, control  } from "react-hook-form";
+import { updateState } from "../redux/action/dataRequest";
 import { requestGet } from '../redux/action/dataRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import requestService from './service/requestService';
 import { useHistory } from "react-router-dom";
 import roomService from './service/roomService';
 import loginServer from '../Common/service/loginServer';
-function ProblemPanel(){
+import thunk from 'redux-thunk';
+import { getList } from '../redux/action/data';
+function ProblemPanel(props){
 
-// need to get by professional
-// yeah i should
-// 75% function :V without test
+// need socket :V
+
+const {socket}=props
+
+let store = createStore(reqHandle,applyMiddleware(thunk))
+store.subscribe(()=>setList(store.getState()))
 
   let history = useHistory();
   const [modal, modalState]= useState(false)
-  const requestsData = useSelector(state => state)
+  const [requestsData, setList] = useState({loading: true})
+
+  
 
   const [info, setInfo] = useState(0)
-
-  const dispatch = useDispatch();
-
   const loadUserData = async ()=>{
 
     loginServer.getRole({token: localStorage.getItem('info')}).then((role)=>{
@@ -35,15 +41,18 @@ function ProblemPanel(){
   }
 
 
+  socket.on("Request", data =>{
+    store.dispatch(updateState(data))
 
+  })
   const createTable=()=>{
       $('table.display').DataTable(
           {
               destroy: true,
             autoWidth: true,
             "lengthMenu": [
-              [16, 32, 64, -1],
-              [16, 32, 64, "All"]
+              [6, 12, 24, -1],
+              [6, 12, 24, "All"]
             ]
           });
   }
@@ -52,11 +61,17 @@ function ProblemPanel(){
     console.log({info})
   },[info])
 
+  useEffect(()=>{
+    console.log({requestsData})
+  },[requestsData])
+
     useEffect(()=>{
         loadUserData()
-        dispatch(requestGet());
+        store.dispatch(requestGet())
         createTable()
     },[])
+
+
 
     useEffect(()=>{
       if(!requestsData.loading)
@@ -78,6 +93,14 @@ function ProblemPanel(){
       }
     }
 
+    const renderButton = (request) => {
+      switch (request.status){
+        case "0" : return <button type="button" class="btn btn-primary" disabled={request.status != 0 ? true : false} onClick={()=>handleRequest(request._id,"1",request.room)}>Handle request</button>
+        case "1" : return <button type="button" class="btn btn-danger" disabled = {info._id === request.status} onClick={()=>handleRequest(request,"0")}>Pending request</button>
+        default : return  null
+      }
+    }
+
     
     
 
@@ -86,11 +109,12 @@ function ProblemPanel(){
 
       if(sts === "0")
       {
-        if(info._id === request.isTaken)
+        // only who was taken can change the status because why ... 
+        if(info._id == request.isTaken)
         {          
           console.log("Can change")
-          requestService.update(request._id,{status: sts}).then(async()=>{
-            dispatch(requestGet())
+          requestService.update(request._id,{status: sts,token: localStorage.getItem("info")}).then(async()=>{
+            store.dispatch(requestGet())
           })
         }
         else
@@ -100,12 +124,13 @@ function ProblemPanel(){
 
       }
       else{
-        requestService.update(request,{status: sts}).then(async()=>{
+        requestService.update(request,{status: sts, token: localStorage.getItem("info")}).then(async()=>{
 
-          dispatch(requestGet())
+          store.dispatch(requestGet())
           if(room)
           {
             roomService.attend({token: localStorage.getItem("info"), room: room}).then(async(res)=>{
+              // if "he" doesnt in the room, add him, if he already ? why bother
               history.push(`/message/${room}`)
             })
             
@@ -114,9 +139,13 @@ function ProblemPanel(){
         })
 
       }
+    }
 
+    const doneRequest = async(id) =>{
 
-
+      requestService.update(id,{status: "3",token: localStorage.getItem("info")}).then(async()=>{
+        store.dispatch(requestGet())
+      })
 
     }
     
@@ -162,14 +191,14 @@ function ProblemPanel(){
                                     <td>{request.byUser && request.byUser.name}</td>
                                     <td>
                                       {
-                                        request.status == 0 ?  <button type="button" class="btn btn-primary" disabled={request.status != 0 ? true : false} onClick={()=>handleRequest(request._id,"1",request.room)}>Handle request</button> :
-                                        <button type="button" class="btn btn-danger" disabled = {info._id === request.status} onClick={()=>handleRequest(request,"0")}>Pending request</button>
+                                        renderButton(request)
+                                        
                                       }
                                    
                                     </td>
                                     <td>
                                       {
-                                        request.status == 2 ? null :  <button type="button" class="btn btn-success">Mark success</button>
+                                        request.isTaken == info._id  ?   <button type="button" class="btn btn-success" onClick={()=>doneRequest(request._id)}>Mark success</button> : null
                                       }
                                     </td>
                                     </tr>

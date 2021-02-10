@@ -8,7 +8,7 @@ const model = new mongoose.Schema(
     byUser:{type: ObjectId, required: true, ref:"users"},
     room: {type: ObjectId, required: true, ref:"roomDetails"},
     handleBy: {type: ObjectId, ref:"roles"},
-    isTaken: {type: ObjectId, required: true, ref:"users"},
+    isTaken: {type: ObjectId, ref:"users"},
   },
   { timestamps: true }
 );

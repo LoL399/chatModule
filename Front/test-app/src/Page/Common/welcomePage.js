@@ -91,7 +91,7 @@ return (
                 </div>
               </div>
               <div class="tags">
-                <a href="#">{user.role.name}</a>
+                <a href="#">{user.role?.name}</a>
               </div>
             </article>
             )

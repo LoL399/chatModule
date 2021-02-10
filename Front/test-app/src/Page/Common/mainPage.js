@@ -60,7 +60,7 @@ function MainPage(props){
             <Switch>
                 <Route path='/message/:id' exact render={props => (<UserChat socket={socket} />)} />
                 {/* <Route path='/message' exact render={props => (<UserChat socket={socket} />)}  /> */}
-                <Route path='/request' exact component={ProblemPanel} />
+                <Route path='/request' exact  render={props => (<ProblemPanel socket={socket} />)} />
                 {/* <Route path='/report' exact component={ProblemForm} /> */}
                 <Route path='/admin' exact component={AdminPage} />
 

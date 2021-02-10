@@ -13,6 +13,7 @@ require('dotenv').config();
 const port = process.env.PORT || 7000;
 const redisPort = process.env.PORT || 6379;
 const chatHandle = require("./chatSocket/chat")
+const reqHandle = require("./chatSocket/request")
 // const client = redis.createClient(redisPort);
 const app = express();
 
@@ -71,24 +72,23 @@ io.on('connection', async (socket) =>{
 
     socket.on('message', async (mess) =>{
 
-        let newChat = await chatHandle.create(mess)
-        if(newChat)
-        {
-          console.log(newChat)
-          let updateRoom = await chatHandle.updateLatest(newChat,io)
-          io.emit(`${mess.UserRoom}`, newChat)
-          io.emit('PushUp',mess.UserRoom)
-          
-        }
-
-
-
+        let newChat = await chatHandle.create(mess,io)
+        // let updateRoom = await chatHandle.updateLatest(newChat,io)
+        io.emit('PushUp',mess.UserRoom)
       // io.emit(`${mess.UserRoom}`, `${socket.id}`)
     })
 
     socket.on('seen',async (data) =>{
       console.log(data)
       chatHandle.updateSeen(data, io)
+    })
+    socket.on('newReq', async (data)=>{
+      console.log(data)
+      reqHandle.create(data,io)
+
+    })
+    socket.on(`GTFO`, async (data) => {
+      chatHandle.GTFO(data, io)
     })
 })
 

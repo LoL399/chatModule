@@ -3,7 +3,7 @@ let Room = require("../database/models/roomDetail")
 let responeData = require("../database/controllers/responeData") 
 const { decodeToken } = require("../database/controllers/loginHandler");
 
-const create = async (data) => {
+const create = async (data,io) => {
     try {
         const { content, replyTo, fromUser, UserRoom } = data;
 
@@ -18,10 +18,18 @@ const create = async (data) => {
             newChat.replyTo = replyTo
    
         }
-        console.log(newChat)
-        const chatNew = new Chat(newChat);
-        let saveChat = await chatNew.save()
-        return saveChat
+        const chatNew = new Chat(newChat)
+        const a = await chatNew.save().then(async()=>{
+            Chat.findById(chatNew._id).populate("fromUser", "name").then(async(chat)=>{
+            // console.log(saveChat)
+            updateLatest(chat,io)
+            io.emit(`${data.UserRoom}`, chat)
+
+            })
+        })        
+
+
+
     } catch (error) {
         console.log(error)
 
@@ -30,30 +38,7 @@ const create = async (data) => {
 };
 
 
-const createUser = async (data) => {
-    try {
-        const { content, replyTo, fromUser, UserRoom } = data;
 
-        var newChat = {
-            content: content,
-            fromUser: decodeToken(fromUser),
-            UserRoom: decodeToken(UserRoom),
-        };
-
-        if(replyTo)
-        {
-            newChat.replyTo = replyTo
-        }
-        console.log(newChat)
-        const chatNew = new Chat(newChat);
-        let saveChat = await chatNew.save()
-        return saveChat
-    } catch (error) {
-        console.log(error)
-        // return res.status(200).json("error")
-    }
-
-}; 
 
 const updateLatest = async(newChat,io) =>{
     try {
@@ -62,11 +47,8 @@ const updateLatest = async(newChat,io) =>{
         Room.findById(UserRoom).then(async (room) =>{
             
             room.lastSeenChat = _id
-            console.log(room)
-
             let a = await room.save()
             a.attendants.forEach(element => {
-
                 io.emit(`${element}`, 0)
               });
         })
@@ -109,6 +91,39 @@ const updateSeen = async(data,io) =>{
         
     }
 }
+
+const GTFO = async (data,io) => {
+    try {
+        const {token,roomId} = data
+        const id = await decodeToken(token)
+
+        if(id)
+        {
+          Room.findById(roomId).then( async (room)=>{
+    
+            if(room.attendants.includes(id))
+            {
+                room.attendants.pop(id)
+                // room.attendants = a
+                room.save().then(async ()=>{
+                    io.emit(`${id}`,0)
+                })
+            }
+          })
+          .catch(async (err)=>{
+              console.log(err)
+            //   let data =  await responeData.createData(1,null,err)
+            //   return res.status(200).json(data)
+          })
+        }
+
+        
+    } catch (error) {
+        console.log(error)
+        
+    }
+}
+
 
 
 
@@ -186,4 +201,4 @@ const updateSeen = async(data,io) =>{
 // }
 
 
-module.exports = {create,createUser,updateLatest,updateSeen}
+module.exports = {create,updateLatest,updateSeen, GTFO}

@@ -133,10 +133,21 @@ const getOne = async (req, res) =>{
 const updateRequest = async (req, res) => {
     try {
         const { id } = req.params;
-        const {status} = req.body;
+        const {status, token} = req.body;
 
+        console.log(status)
         Request.findById(id).then( async (request)=>{
             request.status = status;
+            
+            if(status == 1)
+            {
+                let user = decodeToken(token)
+                request.isTaken = user;
+            }
+            else
+            {
+                request.isTaken = undefined
+            }
             request.save().then(async () =>{ 
                 let data =  await responeData.createData(0,"",process.env.SUCCESS)
                 return res.status(200).json(data)

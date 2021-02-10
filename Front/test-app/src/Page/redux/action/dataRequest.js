@@ -25,3 +25,12 @@ export function requestGet(){
     }
     // return{type: FETCH_USERS_BEGIN, payload: await userService.list()}
 }
+
+export function updateState(newItem){
+
+    return({
+            type:"NEW_CHAT",
+            payload: newItem })
+
+// return{type: FETCH_USERS_BEGIN, payload: await userService.list()}
+}

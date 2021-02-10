@@ -25,8 +25,10 @@ router.put("/request/update/:id", request.updateRequest);
 router.post("/room/create", room.create)
 router.post("/room/hidden", room.changeRoomStatus)
 router.post("/room", room.getRoomList)
+router.put("/room/GTFO", room.GTFO)
 router.get("/room/get", room.getAll)
 router.put("/room/attend", room.attendRoom)
+router.post("/room/attendantsList", room.getRoomAttendants)
 
 //chat (Fuck this)
 router.post("/chat/get", chat.getAll);

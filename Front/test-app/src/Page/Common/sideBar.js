@@ -129,6 +129,7 @@ function SideBar(props){
     useEffect(()=>{
       console.log(role)
       socket.on(`${role._id}`, (data)=>{
+        console.log("Hhahahah")
         if(data === 0){
           store.dispatch(getList({token: localStorage.getItem('info')}))
         }
@@ -138,15 +139,14 @@ function SideBar(props){
 
     const openTheGate = ()=>{
       socket.on(`PushUp`, (data)=>{
+        console.log(data)
           if(data)
           { 
             if(!wait.includes(data))
             {
               console.log(data)
               setWait(oldState =>[...oldState, data])
-
             }
-
               // dispatch(updateState(data))
               // setContent("")
 
@@ -214,36 +214,40 @@ function SideBar(props){
           {
             list.items.map((user,idx)=>{
               return (
-                user.attendants.map((att,idx)=>{
-                  if(att._id!==role._id)
-                  return (
-           
-                      <Link className={ location.pathname == `/message/${user._id}` ? "nav-item mt-2 active" : "nav-item mt-2 "} to={`/message/${user._id}`  } >
-                      {collapse ? 
-                      <span className=" avatar-sm">
-                      <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." className="avatar-img rounded-circle"/>
-          
-                    </span>
-                      : 
-                      <span className=" avatar-md">
-                      <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." className="avatar-img rounded-circle"/>
-                      <span className="ml-3 item-text">{att.name}</span>
-                      {
-                        user.lastSeenChat && user.lastSeenChat.fromUser !== role._id ? <span class="badge badge-primary">New</span> : null
-                      }
-                      {/* {newChat.includes(user._id) === true ? <span class="badge badge-primary">New</span> : null } */}
-                      
-                      {/* {
-                        wait.includes(user.UserRoom) === true ? <span className="ml-3 item-text">New</span> : null
-                      } */}
-                    </span>}
-                    </Link>
 
-                    
 
-                    
-                  )
-                })
+                           
+                <Link className={ location.pathname == `/message/${user._id}` ? "nav-item mt-2 active" : "nav-item mt-2 "} to={`/message/${user._id}`  } >
+                {collapse ? 
+                <span className=" avatar-sm">
+                <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." className="avatar-img rounded-circle"/>
+    
+              </span>
+                : 
+                <span className=" avatar-md">
+                <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." className="avatar-img rounded-circle"/>
+                  {
+                      user.attendants.map((att,idx)=>{
+                        return (
+                          <span className="ml-3 item-text">
+                          
+                          {att.name}
+                          </span>
+
+                        )
+                      })
+                  }
+                {
+                  user.lastSeenChat && user.lastSeenChat.fromUser !== role._id ? <span class="badge badge-primary">New</span> : null
+                }
+                {/* {newChat.includes(user._id) === true ? <span class="badge badge-primary">New</span> : null } */}
+                
+                {/* {
+                  wait.includes(user.UserRoom) === true ? <span className="ml-3 item-text">New</span> : null
+                } */}
+              </span>}
+              </Link>
+
 
               )
 

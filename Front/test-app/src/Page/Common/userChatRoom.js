@@ -12,11 +12,13 @@ import loginServer from "./service/loginServer";
 import userService from "../Admin/service/userService";
 import { Button, Modal } from "react-bootstrap";
 import ProblemForm from "../Admin/problemForm"
+import roomService from "../Admin/service/roomService";
 
 // const socket = io('localhost:8080');
 
 
 function UserChat(props){
+    // all user name in one tag :V stupid
 
     const {socket} = props
 
@@ -25,6 +27,14 @@ function UserChat(props){
 
     const [modal, setModal] = useState(false)
 
+    const [content, setContent] = useState("");
+    var   {  id } = useParams();
+    const chatList = useSelector(state => state);
+    const [info,setInfo] = useState([])
+    const [allow,setAllow] = useState(false)
+
+    const dispatch = useDispatch();
+
     const focusLast = async () => {
 
         var objChat = document.getElementsByClassName("chatArea")
@@ -32,48 +42,38 @@ function UserChat(props){
 
     }
 
-    
-    const [content, setContent] = useState("");
-    var   {  id } = useParams();
-    const chatList = useSelector(state => state);
-    const [info,setInfo] = useState(0)
+    const getList = () =>{
+        roomService.getAttendantList({id: id}).then(async(users)=>{
+            setInfo(users.data.data)
+        })
+    }
 
-    const dispatch = useDispatch();
-
-
-    const initData = (code) =>{
+    const initData = () =>{
         loginServer.getRole({token: localStorage.getItem('info')}).then((role)=>{
             if(role.data !== 'err')
             {
               setRole(role.data);
-              if(code) //init code
-              {
-                openTheGate()
-              }
+              openTheGate()
 
             }
           }).catch((err)=>{console.log(err)});
     }
 
     useEffect(() => {
-
-        initData(0)
-  
+        getList()
       }, []);
 
 
       useEffect(() => {
         initData()
-
-  
       }, [id]);
 
     useEffect(()=>{
         if(id){
             dispatch(getByRoom(id,15))
-            socket.on('connect', () => {
-                console.log(socket.id); // an alphanumeric id...
-             });
+            // socket.on('connect', () => {
+            //     console.log(socket.id); // an alphanumeric id...
+            //  });
         }
         else
         {
@@ -92,32 +92,44 @@ function UserChat(props){
 
     }, [role]);
 
+    useEffect(async ()=>{
+        let a= await search(role._id, info)
+        setAllow(a)
+    },[info,role])
+
+
+
 
     useEffect(()=>{ 
-        if(!chatList.loading && chatList.items[0].UserRoom)
-        {
-            chatList.items[0].UserRoom.attendants.map((att,idx)=>{
-                if(att!==role._id)
-                {
-                    userService.getById(att).then((user)=>{
-                        setInfo(user.data.data)
-                    })
-                }
-    
-            })
-        }  
-
         focusLast();
     },[chatList])
+
+
+    useEffect(()=>{ 
+        console.log(info)
+    },[info])
+
+
+    const GTFO = async () => {
+        roomService.GTFO({token: localStorage.getItem("info"), roomId: id}).then(async (room)=>{
+            if(room.data.message===1)
+            {
+                history.push(`/request`)
+
+            }
+        })
+    }
+
 
 
 
 
     const openTheGate = ()=>{
         socket.on(`${id}`, (data)=>{
+            console.log({data})
             if(data)
             { 
-                console.log(data)
+                console.log({data})
                 dispatch(updateState(data))
                 setContent("")
             }
@@ -126,6 +138,16 @@ function UserChat(props){
 
     const seenMess = async () => { 
         socket.emit("seen", {roomId: id, token: localStorage.getItem("info")})
+    }
+
+    const search = async (nameKey, myArray) =>{
+        for (var i=0; i < myArray.length; i++) {
+            if (myArray[i]._id == nameKey) {
+                console.log("Yes")
+                return true;
+            }
+        }
+        return false
     }
 
 
@@ -148,13 +170,18 @@ function UserChat(props){
                 <span className=" avatar-md ">
                     <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." className="avatar-img rounded-circle"/>
                 </span>
-                {info === 0 ? "Loading" : <span className="ml-3 mr-3 item-text">{info.name}</span> }
-
                 <div className="form-check-inline p-2"> 
-                <span class="badge bg-primary">{info === 0  ? "Loading" : info.role.name }</span>
-                {/* <span class="badge rounded-pill bg-success">Online</span>
-                <span class="badge rounded-pill bg-danger">Offline</span> */}
+                {info.map( ( user, idx)=>{
+
+                    return (
+                        <span className="ml-2 item-text">{user.name}</span>
+                        
+                    )
+                    
+                })}
                 </div>
+
+
 
 
                 </div>
@@ -163,7 +190,7 @@ function UserChat(props){
                         {/* create new user problem request  */}
                         <button type="button" className="btn btn-primary" onClick={()=>{setModal(true)}}>Create Problem </button>
                         {/* GTFO */}
-                        <button type="button" class="btn btn-danger ml-2">GTFOUT</button>
+                        <button type="button" class="btn btn-danger ml-2" onClick={()=>{GTFO()}}>GTFOUT</button>
                     </div>
 
                 </div>
@@ -174,7 +201,7 @@ function UserChat(props){
             {
                 chatList.items.map((chat,idx)=>{
 
-                    if(role._id && chat.fromUser?._id !== role._id){
+                    if(chat.fromUser?._id !== role._id){
                         return <YourChat data={chat}/>
                     }
                     else{
@@ -194,10 +221,14 @@ function UserChat(props){
             
 
             </div>
-            <div class="input-group mb-3 mt-2 position-sticky ">
-                <input type="text" class="form-control" placeholder="Say something ..." value={content} onClick={()=>seenMess()} onChange={(e)=>setContent(e.target.value)}/>
-                <button class="btn btn-outline-secondary" type="button" onClick={makeMessage}>Send</button>
-            </div>
+            {
+               allow === true  ? 
+                <div class="input-group mb-3 mt-2 position-sticky ">
+                    <input type="text" class="form-control" placeholder="Say something ..." value={content} onClick={()=>seenMess()} onChange={(e)=>setContent(e.target.value)}/>
+                    <button class="btn btn-outline-secondary" type="button" onClick={makeMessage}>Send</button>
+                </div> : null
+            }
+
 
 
 
@@ -211,7 +242,7 @@ function UserChat(props){
                 <Modal.Title>Modal heading</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ProblemForm info = {info} room={id}/>
+                    <ProblemForm info = {info} room={id} socket={socket}/>
                 </Modal.Body>
             </Modal>
         
