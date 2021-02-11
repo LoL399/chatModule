@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import $ from 'jquery';
 import { useDispatch, useSelector } from "react-redux";
-import { getByRoom, updateState } from "../redux/action/message";
+import { destroy, getByRoom, getMoreChat, updateState } from "../redux/action/message";
 import { useHistory, useParams } from "react-router-dom";
 import MyChat from "./myChat";
 import YourChat from "./yourChat";
@@ -31,6 +31,7 @@ function UserChat(props){
     var   {  id } = useParams();
     const chatList = useSelector(state => state);
     const [info,setInfo] = useState([])
+    const [page, setPage] = useState(1)
     const [allow,setAllow] = useState(false)
 
     const dispatch = useDispatch();
@@ -60,17 +61,25 @@ function UserChat(props){
     }
 
     useEffect(() => {
+
+
         getList()
+        focusLast();
+        
+
       }, []);
-
-
       useEffect(() => {
+        dispatch(destroy())
+        setPage(1)
+        focusLast();
         initData()
       }, [id]);
 
     useEffect(()=>{
         if(id){
-            dispatch(getByRoom(id,15))
+
+            dispatch(getByRoom(id, 15*page))
+
             // socket.on('connect', () => {
             //     console.log(socket.id); // an alphanumeric id...
             //  });
@@ -98,16 +107,18 @@ function UserChat(props){
     },[info,role])
 
 
-
-
     useEffect(()=>{ 
-        focusLast();
-    },[chatList])
+        dispatch(destroy())
+        dispatch(getByRoom(id, 15*page))
 
+    },[page])
+
+    
 
     useEffect(()=>{ 
         console.log(info)
     },[info])
+
 
 
     const GTFO = async () => {
@@ -118,6 +129,10 @@ function UserChat(props){
 
             }
         })
+    }
+
+    const moreChat = async () =>{
+        setPage(page+1)
     }
 
 
@@ -198,6 +213,7 @@ function UserChat(props){
             </div>
 
             <div className="row chatArea p3">
+                {chatList.err==-1?<small className="text-center mt-2" onClick={()=>moreChat()}>You've reached the beginning of the chat box</small>:<p className="text-center mt-2" onClick={()=>moreChat()}>Load more ...</p>}
             {
                 chatList.items.map((chat,idx)=>{
 

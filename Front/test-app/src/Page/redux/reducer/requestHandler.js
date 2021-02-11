@@ -50,6 +50,7 @@ const initialState = {
 
         case "NEW_CHAT":
           return {
+            ...state,
             loading: false,
             error: null,
             items: state.items.concat(action.payload)

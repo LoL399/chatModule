@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import "./src/customCss.css"
 import Cookies from "js-cookie";
 import chatService from "./service/chatService";
-import { dataGet, updateState, userGetChat } from "../redux/action/message";
+import { dataGet, destroy, updateState, getByRoom } from "../redux/action/message";
 import YourChat from "../Common/yourChat";
 import MyChat from "../Common/myChat";
 import io from 'socket.io-client';
@@ -34,6 +34,7 @@ function DummyPage(data){
     const dispatch = useDispatch();
     const [info, setInfo] =  useState({})
     const [room, setRoom] =  useState("") 
+    const [page, setPage] = useState(1)
     
 
 
@@ -64,12 +65,14 @@ function DummyPage(data){
             console.log(data)
 
             chatService.roomList({token: localStorage.getItem("info")}).then((data)=>{
+
+                console.log(data.data.data[0]._id)
                 
                 if(data.data.data[0])
                 {
                     openTheGate(data.data.data[0]._id)
                     setRoom(data.data.data[0])
-                    dispatch(userGetChat(data.data.data[0]._id ,{skip: skip}))
+                    dispatch(getByRoom(data.data.data[0]._id ,15*page))
                     
                     
                 }
@@ -108,8 +111,6 @@ function DummyPage(data){
                     setRoom(data.data.data[0])
                 }
 
-
-
             })
 
           }
@@ -119,8 +120,19 @@ function DummyPage(data){
       
       useEffect(()=>{
         console.log({room})
- 
      }, [room])
+     useEffect(()=>{ 
+        dispatch(destroy())
+        dispatch(getByRoom(room._id, 15*page))
+
+    },[page])
+
+    
+    const moreChat = async () =>{
+        setPage(page+1)
+    }
+
+
 
 
 
@@ -171,6 +183,8 @@ function DummyPage(data){
 
                     </div>
                     <div className="row chatBox p3">
+                    {chatList.err==-1?<small className="text-center mt-2" onClick={()=>moreChat()}>You've reached the beginning of the chat box</small>:<p className="text-center mt-2" onClick={()=>moreChat()}>Load more ...</p>}
+ 
                     {
                     chatList.items.map((chat,idx)=>{
 

@@ -65,14 +65,19 @@ const getByUser = async (req, res) =>{
     try {
         
         const {id} = req.params
-        const {skip} = req.body
+        const {skip, limit} = req.body
+        console.log(skip, limit)
         // some condition ?
 
 
-        Chat.find({UserRoom: id }).select("-_id").sort( {createdAt: -1}).limit(skip)
+        Chat.find({UserRoom: id }).select("-_id").sort( {createdAt: -1}).limit(limit).skip(skip)
         .then( async (chat)=>{
-            let data =  await responeData.createData(0,chat.reverse(), process.env.SUCCESS)
-            return res.status(200).json(data)
+
+            
+
+            
+            // let data =  await responeData.createData(0,chat.reverse(), process.env.SUCCESS)
+            // return res.status(200).json(data)
 
         })
         .catch(async (err)=>{
@@ -92,19 +97,26 @@ const getByUser = async (req, res) =>{
 const getbyRoom = async (req, res) =>{
     try {
         const {id}= req.params
-        const {skip}=req.body
-        Chat.find({UserRoom: id}).sort( {createdAt: -1}).populate({path: "UserRoom"}).populate("fromUser", "name").limit(skip).then( async (chat)=>{
+        const {skip, limit} = req.body
 
-            if(chat.length === 0)
+        console.log(limit,{id})
+
+        Chat.find({UserRoom: id}).sort( {createdAt: -1}).populate({path: "UserRoom"}).populate("fromUser", "name").limit(limit).then( async (chat)=>{
+
+            let a = await Chat.find({UserRoom: id })
+
+            if(a.length < limit)
             {
-                console.log("empty")
-
+                let data =  await responeData.createData(-1,chat.reverse(), process.env.SUCCESS)
+                return res.status(200).json(data)
             }
             else
             {
                 let data =  await responeData.createData(0,chat.reverse(), process.env.SUCCESS)
                 return res.status(200).json(data)
             }
+
+
 
         })
         .catch(async (err)=>{

@@ -46,7 +46,8 @@ export function userGetChat(id,data){
         return userChatService.list(id,data).then(chat =>{
             dispatch({
                 type: FETCH_USERS_SUCCESS,
-                payload: chat.data.data
+                payload: chat.data.data,
+                err: data.data.err
             })
             
         }).catch(()=>{
@@ -61,13 +62,35 @@ export function userGetChat(id,data){
 }
 
 
-export function getByRoom(id,skip){
+export function getByRoom(id,limit){
 
     return function(dispatch)
     {
-        return chatService.getRoom(id,{skip:skip}).then(data =>{
+        return chatService.getRoom(id,{limit:limit}).then(data =>{
             dispatch({
                 type: FETCH_USERS_SUCCESS,
+                payload: data.data.data,
+                err: data.data.err
+            })
+            
+        }).catch(()=>{
+            dispatch({
+                type: FETCH_USERS_FAILURE
+            })
+
+        })
+        
+    }
+    // return{type: FETCH_USERS_BEGIN, payload: await userService.list()}
+}
+
+export function getMoreChat(id,limit, page){
+
+    return function(dispatch)
+    {
+        return chatService.getRoom(id,{limit:limit, skip: limit*page}).then(data =>{
+            dispatch({
+                type: "MORE_CHAT",
                 payload: data.data.data
             })
             
@@ -103,6 +126,15 @@ export function getList(id){
     // return{type: FETCH_USERS_BEGIN, payload: await userService.list()}
 }
 
+export function destroy(id){
+
+    return function(dispatch)
+    {
+        dispatch({ type: "DESTROY_SESSION" });
+        
+    }
+    // return{type: FETCH_USERS_BEGIN, payload: await userService.list()}
+}
 
 
 

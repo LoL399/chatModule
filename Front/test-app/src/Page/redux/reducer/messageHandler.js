@@ -28,9 +28,9 @@ const initialState = {
         // All done: set loading "false".
         // Also, replace the items with the ones from the server
         return {
-          ...state,
           loading: false,
-          items: action.payload
+          items: action.payload,
+          err: action.err
         };
   
       case FETCH_USERS_FAILURE:
@@ -54,9 +54,18 @@ const initialState = {
             error: null,
             items: state.items.concat(action.payload)
           };
-  
-
-  
+          
+        case "MORE_CHAT":
+          let oldState =  state.items
+          console.log({oldState})
+          return {
+            loading: false,
+            error: null,
+            items: action.payload.concat( oldState )
+          };
+        
+        case "DESTROY_SESSION":
+          state = initialState
       default:
         // ALWAYS have a default case in a reducer
         return state;
