@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('common/css/app-light.css');
+@import url('common/css/feather.css');
+@import url('common/css/select2.css');
+@import url('common/css/simplebar.css');
+@import url('common/css/costumecss.css');
+@import url('common/css/quill.snow.css');
+@import url('common/css/uppy.min.css');
+
+@import url('common/bootstrap-5.0.0-beta1-dist/css/bootstrap.css');
+@import url('common/bootstrap-5.0.0-beta1-dist/css/bootstrap.min.css');
+

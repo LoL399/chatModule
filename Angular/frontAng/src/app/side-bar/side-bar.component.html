@@ -1,0 +1,82 @@
+<nav class="vertnav navbar navbar-light">
+    <ul class="navbar-nav flex-fill w-100 mb-2">
+
+   
+      <li class="nav-item ">
+        <a  class=" nav-link" >
+          <i class="fe fe-home fe-16"></i>
+          <span class="ml-3 item-text">DASHBOARD</span><span class="sr-only">(current)</span>
+        </a>
+
+      </li> 
+
+
+        <li class="nav-item  ">
+          <a  class=" nav-link" >
+
+          <i class="fe fe-home fe-16"></i>
+          <span class="ml-3 item-text">REQUESTS</span><span class="sr-only">(current)</span>
+
+        </a>
+
+      </li> 
+
+    
+
+    </ul>
+      
+
+
+    <!-- {
+      list.loading === true ? null :
+      <ul class="navbar-nav flex-fill w-100 mb-2">
+      {
+        list.items.map((user,idx)=>{
+          return (
+
+
+                       
+            <a class={ location.pathname == `/message/${user._id}` ? "nav-item mt-2 active" : "nav-item mt-2 "} to={`/message/${user._id}`  } >
+            {collapse ? 
+            <span class=" avatar-sm">
+            <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." class="avatar-img rounded-circle"/>
+
+          </span>
+            : 
+            <span class=" avatar-md">
+            <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." class="avatar-img rounded-circle"/>
+              {
+                  user.attendants.map((att,idx)=>{
+                    return (
+                      <span class="ml-3 item-text">
+                      
+                      {att.name}
+                      </span>
+
+                    )
+                  })
+              }
+            {
+              user.lastSeenChat && user.lastSeenChat.fromUser !== role._id ? <span class="badge badge-primary">New</span> : null
+            }
+            {/* {newChat.includes(user._id) === true ? <span class="badge badge-primary">New</span> : null } */}
+            
+            {/* {
+              wait.includes(user.UserRoom) === true ? <span class="ml-3 item-text">New</span> : null
+            } */}
+          </span>}
+          </a>
+
+
+          )
+
+
+
+        })
+      }
+    </ul>
+    } -->
+    
+
+
+  </nav>

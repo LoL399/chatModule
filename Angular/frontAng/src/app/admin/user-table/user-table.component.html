@@ -1,0 +1,73 @@
+<div class="row justify-content-center">
+    <div class="col-12">
+    <div class="row mb-4 items-align-center">
+    <h2 class="mb-2 page-title">User's info control</h2>
+      <div class="col-md-auto ml-auto text-right">
+        <button type="button" class="btn" ><span class="fe fe-plus fe-24 text-muted text-primary" ></span></button>
+      </div>
+    </div>
+    <div class="row my-4">
+
+      <div class="col-md-12">
+        <div class="card shadow">
+          <div class="card-body">
+            <table datatable class="table datatables display ">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+
+                <th>Role</th>
+                <th>Status</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of userData">
+
+                <td>{{user.Id}}</td>
+                <td>{{user.Name}}</td>
+
+                <td>{{user.Role}}</td>
+                <td><span class="badge badge-pill badge-success text-light">Active</span></td>
+
+                  <!-- <td><button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <span class="text-muted sr-only">Action</span>
+                    </button>
+                    {/* <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item text-warning pointercursor" onClick={()=>this.setModalState(0, true,user)}>Edit</a>
+                      <a class="dropdown-item text-danger pointercursor" onClick={()=>this.removeConfirm(user)}>{user.status === true ? "Disabled" : "Enable"  }</a>
+                      <a class="dropdown-item text-primary pointercursor" onClick={()=>this.setModalState(1,false, user)}>Activities</a>
+                    </div> */}
+                  </td> -->
+                </tr>
+            </tbody>
+          </table> 
+          
+            
+          </div>
+        </div>
+      </div> 
+      </div> 
+
+<!-- {/*  */}
+<Modal
+size="lg"
+show={modal}
+onHide={()=>modalState(!modal)}
+aria-labelledby="example-modal-sizes-title-lg"
+>
+<Modal.Header closeButton>
+  <Modal.Title id="example-modal-sizes-title-lg">
+    Blah blah
+  </Modal.Title>
+</Modal.Header>
+<Modal.Body>
+  <UserDetail type={true} data={data}/>
+
+</Modal.Body >
+</Modal> -->
+
+</div>
+
+</div>
