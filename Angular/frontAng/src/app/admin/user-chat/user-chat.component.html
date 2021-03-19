@@ -7,7 +7,7 @@
         </span>
         <div class="form-check-inline p-2"> 
 
-                <span class="ml-2 item-text">user.name</span>
+                <span class="ml-2 item-text" *ngFor="let att of roomInfo.Attendants">{{att.Name}}</span>
 
         </div>
 

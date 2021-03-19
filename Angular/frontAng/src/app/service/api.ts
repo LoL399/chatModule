@@ -7,7 +7,13 @@ const url ={    /// tat ca cac duong dan thi nam o day
     usser: "user",
     room: "room",
     chat: "chat",
-    role: "role"
+    role: "role",
+    login:"login"
+
+};
+const urlGuess ={    /// tat ca cac duong dan thi nam o day
+    baseURL: "https://localhost:5001/",
+    login:"login"
 
 };
 const instance = axios.create({             
@@ -15,13 +21,14 @@ const instance = axios.create({
     headers:{
         "Content-Type":"application/json",  
         "Accept":"application/json" ,
-        // 'Authorization': `Basic ${localStorage.getItem('info')}`
+        'Authorization': `Bearer ${localStorage.getItem('info')}`
     },
 });
 
 
 
 export default {   
+    guest: urlGuess,
     url : url,
     axios: instance,
     get : instance.get,

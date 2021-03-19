@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using netBackEnd.Common;
 using netBackEnd.Models;
 using netBackEnd.Services;
@@ -16,6 +17,14 @@ namespace netBackEnd.Area.Admin
     public class UserController : ControllerBase
     {
         private UserServices user = new UserServices();
+
+        private readonly IJWTAuthencation jWTAuthencation;
+
+
+        public UserController(IJWTAuthencation jWTAuthencation)
+        {
+            this.jWTAuthencation = jWTAuthencation;
+        }
 
         [HttpGet("get")]
         public IActionResult getAll()
@@ -46,6 +55,16 @@ namespace netBackEnd.Area.Admin
             //    Summary = Summaries[rng.Next(Summaries.Length)]
             //})
             //.ToArray();
+            var list = user.getOneAsync(id);
+            var data = CreateData.create(0, list, "Success");
+            return Ok(data);
+        }
+
+        [HttpGet("get/info")]
+        public IActionResult getInfo()
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Split("Bearer ");
+            var id = jWTAuthencation.decodeToken(accessToken[1]);
             var list = user.getOneAsync(id);
             var data = CreateData.create(0, list, "Success");
             return Ok(data);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using netBackEnd.Common;
 using netBackEnd.Models;
 
 namespace netBackEnd.Services
@@ -42,22 +43,48 @@ namespace netBackEnd.Services
             return list;
         }
 
-        public async Task<Rooms> getOneAsync(string id)
+        public async Task<RoomDetail> getOneAsync(string id)
         {
-
+            UserServices user = new UserServices();
             var rCollection = db.getRoomCollectionAsync();
-            var room = await rCollection.Find(s => s.Id.ToString() == id).SingleAsync();
-            return room;
+            var room = await rCollection.Find(s => s.Id == ObjectId.Parse(id)).SingleAsync();
+            List<Users> attList = new List<Users>();
+
+            foreach (var att in room.Attendants)
+            {
+                var getInfo = user.getAttendants(att.ToString());
+                attList.Add(getInfo);
+            }
+            RoomDetail details = new RoomDetail(room.Id.ToString(), attList);
+
+            return details;
         }
 
-        public async Task<IEnumerable<Rooms>> getRoomListAsync(string id)
+        public async Task<IEnumerable<RoomDetail>> getRoomListAsync(string id)
         {
-
+            UserServices user = new UserServices();
             var uCollection = db.getRoomCollectionAsync();
             var filter = Builders<Rooms>.Filter.AnyEq(x => x.Attendants, ObjectId.Parse(id));
             var list = await uCollection.Find(filter).ToListAsync();
 
-            return list;
+            List < RoomDetail > roomDetail = new List<RoomDetail>();
+
+            foreach (var x in list)
+            {
+                List<Users> attList = new List<Users>();
+
+                foreach (var att in x.Attendants) 
+                {
+                    var getInfo = user.getAttendants(att.ToString());
+                    attList.Add(getInfo);
+                }
+                RoomDetail details = new RoomDetail(x.Id.ToString(), attList);
+                roomDetail.Add(details);
+            }
+
+            return roomDetail;
+
+
         }
     }
 }

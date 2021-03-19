@@ -1,1 +1,37 @@
-<p>sign-in works!</p>
+<div class=" h-100">
+    
+
+        <section  class="card2-list h-100">
+
+          <p *ngIf="userList == 0">Loading ...</p>
+
+          
+          <article #showThis *ngFor="let user of userList" class="card2" (click)="signIn(user)">
+
+            <header class="card2-header">
+              <p>Testing subject</p>
+            </header>
+    
+            <div class="card2-author">
+              <a class="author-avatar" href="#">
+                <img src="https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg" />
+              </a>
+              <svg class="half-circle" viewBox="0 0 106 57">
+                <path d="M102 4c0 27.1-21.9 49-49 49S4 31.1 4 4"></path>
+              </svg>
+    
+              <div class="author-name text-light">
+                <p className="text-light ">{{user.Name}}</p>
+              </div>
+            </div>
+            <div class="tags">
+              <a href="#">{{user.Role}}</a>
+            </div>
+          </article>
+
+
+
+
+          </section>
+
+  </div>

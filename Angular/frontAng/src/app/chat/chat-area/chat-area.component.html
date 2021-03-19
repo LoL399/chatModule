@@ -1,8 +1,18 @@
 <div class="row chatArea p3">
     <small class="text-center mt-2" >You've reached the beginning of the chat box</small>
-    <app-my-chat></app-my-chat>
+    
+    <div *ngFor="let chat of chatList" [ngSwitch]="chat.FromUser">
 
-    <app-your-chat></app-your-chat>
+        <app-my-chat *ngSwitchCase="info.Id " [chat]="chat" ></app-my-chat>
+        <app-your-chat *ngSwitchDefault [chat]="chat"></app-your-chat>
+
+
+    </div>
+
+    
+
+
+
 
 <!-- <div class="col-12">
 
@@ -18,6 +28,6 @@
 </div>
 
     <div class="input-group mb-3 mt-2 position-sticky ">
-        <input type="text" class="form-control" placeholder="Say something ..." value="content" />
-        <button class="btn btn-outline-secondary" type="button" onClick={makeMessage}>Send</button>
+        <input type="text" class="form-control" placeholder="Say something ..." value={{chatContent}} (change)="changeContent($event)" />
+        <button class="btn btn-outline-secondary" type="button" (click)="sendChat()">Send</button>
     </div> 

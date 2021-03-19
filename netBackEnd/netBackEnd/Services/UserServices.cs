@@ -51,6 +51,15 @@ namespace netBackEnd.Services
             return query;
         }
 
+        public Users getAttendants(string id)
+        {
+            var uCollection = db.getUserCollectionAsync();
+            var user = uCollection.Find(s => s.Id == ObjectId.Parse(id)).FirstOrDefault();
+
+            return user;
+
+        }
+
         public IQueryable getOneAsync(string id)
         {
             var uCollection = db.getUserCollectionAsync();
@@ -68,8 +77,16 @@ namespace netBackEnd.Services
 
                         };
             //var list = await uCollection.Find(s => true).ToListAsync();
+            if (query.Any())
+            {
+                return query;
 
-            return query;
+            }
+            else
+            {
+                return null;
+            }
+
         }
 
 

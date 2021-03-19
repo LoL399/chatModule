@@ -29,5 +29,14 @@ namespace netBackEnd.Models
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
         [BsonElement("createdAt")]
         public DateTime CreatedOn { get; set; } = DateTime.Now;
+
+
+        public Chat(string room, string content, string byUser)
+        {
+            UserRoom = ObjectId.Parse(room);
+            Content = content;
+            FromUser = ObjectId.Parse(byUser);
+
+        }
     }
 }

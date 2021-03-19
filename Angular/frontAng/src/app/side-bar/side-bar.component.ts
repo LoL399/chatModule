@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import roomService from '../service/roomService'
 
 @Component({
   selector: 'app-side-bar',
@@ -7,7 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SideBarComponent implements OnInit {
 
-  constructor() { }
+  yourRoomList : any
+
+  constructor() { 
+    this.fetchData()
+  }
+
+  fetchData(){
+    roomService.list().then((roomList)=>{
+
+      const {data} = roomList;
+      console.log(data.data)
+      this.yourRoomList = data.data;
+      
+    })
+  }
 
   ngOnInit(): void {
   }

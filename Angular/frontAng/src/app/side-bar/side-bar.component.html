@@ -24,57 +24,43 @@
     
 
     </ul>
+
+    <ul class="navbar-nav flex-fill w-100 mb-2">
+
+
+
+            <a routerLink="t/{{room.ID}}" class="nav-item mt-2" *ngFor="let room of yourRoomList" >           
+            <!-- <a class={ location.pathname == `/message/${user._id}` ? "nav-item mt-2 active" : "nav-item mt-2 "} to={`/message/${user._id}`  } > -->
+            <!-- {collapse ? 
+            <span class=" avatar-sm">
+            <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." class="avatar-img rounded-circle"/>
+
+          </span> -->
+
+            <span class=" avatar-md">
+            <img src="https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg" alt="..." class="avatar-img rounded-circle"/>
+            <span class="ml-3 item-text" *ngFor="let att of room.Attendants">
+              {{att.Name}} -
+            </span>
+            <!-- {
+              user.lastSeenChat && user.lastSeenChat.fromUser !== role._id ? <span class="badge badge-primary">New</span> : null
+            } -->
+            <!-- {/* {newChat.includes(user._id) === true ? <span class="badge badge-primary">New</span> : null } */}
+            
+            {/* {
+              wait.includes(user.UserRoom) === true ? <span class="ml-3 item-text">New</span> : null
+            } */} -->
+          </span>
+          </a>
+
+
+    </ul>
       
 
 
     <!-- {
       list.loading === true ? null :
-      <ul class="navbar-nav flex-fill w-100 mb-2">
-      {
-        list.items.map((user,idx)=>{
-          return (
-
-
-                       
-            <a class={ location.pathname == `/message/${user._id}` ? "nav-item mt-2 active" : "nav-item mt-2 "} to={`/message/${user._id}`  } >
-            {collapse ? 
-            <span class=" avatar-sm">
-            <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." class="avatar-img rounded-circle"/>
-
-          </span>
-            : 
-            <span class=" avatar-md">
-            <img src={"https://pbs.twimg.com/media/D1EKW0cXcAAwQMg.jpg"} alt="..." class="avatar-img rounded-circle"/>
-              {
-                  user.attendants.map((att,idx)=>{
-                    return (
-                      <span class="ml-3 item-text">
-                      
-                      {att.name}
-                      </span>
-
-                    )
-                  })
-              }
-            {
-              user.lastSeenChat && user.lastSeenChat.fromUser !== role._id ? <span class="badge badge-primary">New</span> : null
-            }
-            {/* {newChat.includes(user._id) === true ? <span class="badge badge-primary">New</span> : null } */}
-            
-            {/* {
-              wait.includes(user.UserRoom) === true ? <span class="ml-3 item-text">New</span> : null
-            } */}
-          </span>}
-          </a>
-
-
-          )
-
-
-
-        })
-      }
-    </ul>
+      
     } -->
     
 

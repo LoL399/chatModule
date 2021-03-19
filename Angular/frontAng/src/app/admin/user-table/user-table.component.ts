@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import "../service/userService"
-import userService from '../service/userService';
+import "../../service/userService"
+import userService from '../.../../../service/userService';
 
 @Component({
   selector: 'app-user-table',

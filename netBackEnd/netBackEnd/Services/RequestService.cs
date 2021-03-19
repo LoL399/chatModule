@@ -54,7 +54,7 @@ namespace netBackEnd.Services
             {
                 var query = from u in uCollection.AsQueryable()
                             join r in rCollection.AsQueryable() on u.Id equals r.byUser
-                            where r.byUser.ToString() == id
+                            where r.byUser == ObjectId.Parse(id)
                             select new
                             {
                                 r,

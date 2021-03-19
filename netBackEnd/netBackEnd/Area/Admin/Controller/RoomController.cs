@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using netBackEnd.Common;
 using netBackEnd.Models;
 using netBackEnd.Services;
@@ -9,12 +11,20 @@ using System.Linq;
 using System.Threading.Tasks;
 namespace netBackEnd.Area.Admin
 {
+    [Authorize]
     [Area("Admin")]
     [Route("admin/room")]
     [ApiController]
     public class RoomController : ControllerBase
     {
+        private readonly IJWTAuthencation jWTAuthencation;
         private RoomService room = new RoomService();
+
+        public RoomController(IJWTAuthencation jWTAuthencation)
+        {
+            this.jWTAuthencation = jWTAuthencation;
+        }
+
         [HttpPost("create")]
         public IActionResult create([FromBody] UserID attendants)
         {
@@ -51,13 +61,23 @@ namespace netBackEnd.Area.Admin
             var data = CreateData.create(0, list.Result, "Success");
             return Ok(data);
         }
-
-        [HttpPost("list")]
-        public IActionResult getList([FromBody]UserID id)
+        [HttpGet("get/{id}")]
+        public IActionResult getOne(string id)
         {
+            var list = room.getOneAsync(id);
+            var data = CreateData.create(0, list.Result, "Success");
+            return Ok(data);
+        }
+
+        [HttpGet("list")]
+        public IActionResult getList()
+        {
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Split("Bearer ");
+
+            var user = jWTAuthencation.decodeToken(accessToken[1]);
 
             //.ToArray();
-            var list = room.getRoomListAsync(id.id);
+            var list = room.getRoomListAsync(user);
             var data = CreateData.create(0, list.Result, "Success");
             return Ok(data);
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using netBackEnd.Common;
 using netBackEnd.Models;
 namespace netBackEnd.Services
 {
@@ -11,31 +12,41 @@ namespace netBackEnd.Services
     {
         private Connection db = new Connection();
 
-        public bool createRole(Chat newChat)
+        public async Task<Chat> createChat(Chat newChat)
         {
 
             try
             {
-
                 var collection = db.getChatCollectionAsync();
-                collection.InsertOneAsync(newChat);
-                return true;
+                collection.InsertOne(newChat);
+                var id = newChat.Id;
+                var result = await getOneAsync(id.ToString());
+
+
+                return result;
 
             }
             catch (Exception)
             {
 
-                return false;
+                return null;
             }
 
         }
 
-        public IEnumerable<Chat> getByRoom(string id, int skip, int limit)
+        public IEnumerable<Chat> getByRoom(getChat request)
         {
             var collection = db.getChatCollectionAsync();
-            var query = collection.Find(s=>s.Id.ToString() == id).ToList().OrderByDescending(s=>s.CreatedOn).Skip(skip).Take(limit);
-
+            var query = collection.Find(s=>s.UserRoom == ObjectId.Parse(request.room)).ToList().OrderByDescending(s=>s.CreatedOn).Skip(int.Parse(request.skip)).Take(int.Parse(request.limit)).Reverse();
             return query;
+        }
+
+        public async Task<Chat> getOneAsync(String id)
+        {
+
+            var Collection = db.getChatCollectionAsync();
+            var chat = await Collection.Find(s => s.Id == ObjectId.Parse(id)).SingleAsync();
+            return chat;
         }
 
 

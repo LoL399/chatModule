@@ -10,7 +10,7 @@ const routes: Routes = [
   {path: "dummy", component: DummyPageComponent},
   {path:"admin", component: MainPageComponent, children:[
     {path:"user", component: UserTableComponent },
-    {path: "t", component: UserChatComponent},
+    {path: "t/:id", component: UserChatComponent}
 
   ]},
 
